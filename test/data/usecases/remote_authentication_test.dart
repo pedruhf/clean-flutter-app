@@ -28,8 +28,8 @@ void main() {
       url: url,
       method: 'post',
       body: {'email': params.email, 'password': params.password},
-    )).thenAnswer(
-        (_) async => {"accessToken": faker.guid.guid(), 'name': faker.person.name()});
+    )).thenAnswer((_) async =>
+        {"accessToken": faker.guid.guid(), 'name': faker.person.name()});
 
     await sut.auth(params);
 
@@ -99,10 +99,24 @@ void main() {
       method: 'post',
       body: {'email': params.email, 'password': params.password},
     )).thenAnswer(
-        (_) async => {"accessToken": accessToken, 'name': faker.person.name()});
+        (_) async => {'accessToken': accessToken, 'name': faker.person.name()});
 
     final account = await sut.auth(params);
 
     expect(account.token, accessToken);
+  });
+
+  test(
+      'should throw unexpected error if HttpClient returns 200 with invalid data',
+      () async {
+    when(httpClient.request(
+      url: url,
+      method: 'post',
+      body: {'email': params.email, 'password': params.password},
+    )).thenAnswer((_) async => {'invalidKey': 'invalidValue'});
+
+    final future = sut.auth(params);
+
+    expect(future, throwsA(DomainError.unexpected));
   });
 }
