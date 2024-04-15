@@ -10,13 +10,20 @@ import 'package:clean_flutter_app/domain/usecases/usecases.dart';
 class HttpClientSpy extends Mock implements HttpClient {}
 
 void main() {
-  test('should call HttpClient with correct input', () async {
-    final httpClient = HttpClientSpy();
-    final url = faker.internet.httpUrl();
-    final sut = RemoteAuthentication(httpClient: httpClient, url: url);
-    final params = AuthenticationParams(
-        email: faker.internet.email(), password: faker.internet.password());
+  late HttpClientSpy httpClient;
+  late String url;
+  late RemoteAuthentication sut;
+  late AuthenticationParams params;
 
+  setUp(() {
+    httpClient = HttpClientSpy();
+    url = faker.internet.httpUrl();
+    sut = RemoteAuthentication(httpClient: httpClient, url: url);
+    params = AuthenticationParams(
+        email: faker.internet.email(), password: faker.internet.password());
+  });
+
+  test('should call HttpClient with correct input', () async {
     await sut.auth(params);
 
     verify(httpClient.request(
@@ -30,20 +37,23 @@ void main() {
   });
 
   test('should throw unexpected error if HttpClient returns 400', () async {
-    final httpClient = HttpClientSpy();
-    final url = faker.internet.httpUrl();
-    final sut = RemoteAuthentication(httpClient: httpClient, url: url);
-    final params = AuthenticationParams(
-        email: faker.internet.email(), password: faker.internet.password());
-
     when(httpClient.request(
       url: url,
       method: 'post',
-      body: {
-        'email': params.email,
-        'password': params.password
-      },
+      body: {'email': params.email, 'password': params.password},
     )).thenThrow(HttpError.badRequest);
+
+    final future = sut.auth(params);
+
+    expect(future, throwsA(DomainError.unexpected));
+  });
+
+  test('should throw unexpected error if HttpClient returns 404', () async {
+    when(httpClient.request(
+      url: url,
+      method: 'post',
+      body: {'email': params.email, 'password': params.password},
+    )).thenThrow(HttpError.notFound);
 
     final future = sut.auth(params);
 
