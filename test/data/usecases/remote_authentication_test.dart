@@ -1,7 +1,7 @@
 import 'package:clean_flutter_app/domain/helpers/helpers.dart';
 import 'package:faker/faker.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
-import 'package:mockito/mockito.dart';
 
 import 'package:clean_flutter_app/data/http/http.dart';
 import 'package:clean_flutter_app/data/usecases/usecases.dart';
@@ -18,8 +18,8 @@ void main() {
   Map mockValidData() =>
       {'accessToken': faker.guid.guid(), 'name': faker.person.name()};
 
-  PostExpectation mockRequest() {
-    return when(httpClient.request(
+  When mockRequest() {
+    return when(() => httpClient.request(
       url: url,
       method: 'post',
       body: {'email': params.email, 'password': params.password},
@@ -46,7 +46,7 @@ void main() {
   test('should call HttpClient with correct input', () async {
     await sut.auth(params);
 
-    verify(httpClient.request(
+    verify(() => httpClient.request(
       url: url,
       method: 'post',
       body: {
