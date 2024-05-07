@@ -1,3 +1,4 @@
+import 'package:clean_flutter_app/data/http/http.dart';
 import 'package:faker/faker.dart';
 import 'package:http/http.dart';
 import 'package:mocktail/mocktail.dart';
@@ -80,6 +81,14 @@ void main() {
       final response = await sut.request(url: url, method: 'post');
 
       expect(response, null);
+    });
+
+    test('should return badRequestError if post returns 400', () async {
+      client.mockPost(400);
+
+      final future = sut.request(url: url, method: 'post');
+
+      expect(future, throwsA(HttpError.badRequest));
     });
   });
 }
