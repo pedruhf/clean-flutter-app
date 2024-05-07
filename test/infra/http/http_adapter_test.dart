@@ -9,6 +9,7 @@ import 'package:clean_flutter_app/infra/http/http_adapter.dart';
 class ClientSpy extends Mock implements Client {
   When mockPostCall() => when(() => this.post(any(), body: any(named: 'body'), headers: any(named: 'headers')));
   void mockPost(int statusCode, { String body = '{"any_key":"any_value"}' }) => mockPostCall().thenAnswer((_) async => Response(body, statusCode));
+  void mockError() => mockPostCall().thenThrow(Exception());
 }
 
 void main() {
@@ -133,6 +134,14 @@ void main() {
 
     test('should return serverError if post returns 500', () async {
       client.mockPost(500);
+
+      final future = sut.request(url: url, method: 'post');
+
+      expect(future, throwsA(HttpError.serverError));
+    });
+
+    test('should return serverError if post throws', () async {
+      client.mockError();
 
       final future = sut.request(url: url, method: 'post');
 
