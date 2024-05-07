@@ -19,6 +19,7 @@ class HttpAdapter implements HttpClient {
       'content-type': 'application/json',
       'accept': 'application/json'
     };
+    if (method != 'post') throw HttpError.serverError;
     final jsonBody = body != null ? jsonEncode(body) : null;
     final response = await client.post(Uri.parse(url), headers: headers, body: jsonBody);
     return _handleResponse(response);
