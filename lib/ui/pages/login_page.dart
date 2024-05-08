@@ -21,11 +21,12 @@ class LoginPage extends StatelessWidget {
                   children: <Widget>[
                     TextFormField(
                       decoration: InputDecoration(
-                          labelText: 'Email',
-                          icon: Icon(
-                            Icons.email,
-                            color: Theme.of(context).primaryColorLight,
-                          )),
+                        labelText: 'Email',
+                        icon: Icon(
+                          Icons.email,
+                          color: Theme.of(context).primaryColorLight,
+                        ),
+                      ),
                       keyboardType: TextInputType.emailAddress,
                     ),
                     Padding(
@@ -41,7 +42,9 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                     ElevatedButton(
-                        onPressed: () {}, child: Text('Entrar'.toUpperCase())),
+                      onPressed: null,
+                      child: Text('Entrar'.toUpperCase())
+                    ),
                     Container(
                       margin: const EdgeInsets.only(top: 6),
                       child: TextButton.icon(
