@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
   http:
   cupertino_icons: ^1.0.6
+  flutter_launcher_icons:
 
 dev_dependencies:
   flutter_test:
@@ -25,3 +26,11 @@ flutter:
   uses-material-design: true
   assets:
     - lib/ui/assets/
+
+flutter_icons:
+  ios: true
+  android: true
+  image_path_android: lib/ui/assets/android.png
+  image_path_ios: lib/ui/assets/ios.png
+  adaptive_icon_background: lib/ui/assets/background.png
+  adaptive_icon_foreground: lib/ui/assets/foreground.png
