@@ -12,17 +12,21 @@ class LoginPresenterSpy extends Mock implements LoginPresenter {}
 void main() {
   late LoginPresenter presenter;
   late StreamController<String> emailErrorController;
+  late StreamController<String> passwordErrorController;
 
   Future<void> loadPage(WidgetTester tester) async {
     presenter = LoginPresenterSpy();
     emailErrorController = StreamController<String>();
-    when(() => presenter.emailErrorSteam).thenAnswer((_) => emailErrorController.stream);
+    passwordErrorController = StreamController<String>();
+    when(() => presenter.emailErrorStream).thenAnswer((_) => emailErrorController.stream);
+    when(() => presenter.passwordErrorStream).thenAnswer((_) => passwordErrorController.stream);
     final loginPage = MaterialApp(home: LoginPage( presenter: presenter ));
     await tester.pumpWidget(loginPage);
   }
 
   tearDown(() {
     emailErrorController.close();
+    passwordErrorController.close();
   });
 
   testWidgets("should load with correct initial state", (tester) async {
@@ -57,5 +61,34 @@ void main() {
     await tester.pump();
 
     expect(find.text('any error'), findsOneWidget);
+  });
+
+  testWidgets("should presents no error if email is valid", (tester) async {
+    await loadPage(tester);
+
+    emailErrorController.add('');
+    await tester.pump();
+
+    final emailTextChildren = find.descendant(of: find.bySemanticsLabel('Email'), matching: find.byType(Text));
+    expect(emailTextChildren, findsOneWidget);
+  });
+
+  testWidgets("should presents error if password is invalid", (tester) async {
+    await loadPage(tester);
+
+    passwordErrorController.add('password error');
+    await tester.pump();
+
+    expect(find.text('password error'), findsOneWidget);
+  });
+
+  testWidgets("should presents no error if password is valid", (tester) async {
+    await loadPage(tester);
+
+    passwordErrorController.add('');
+    await tester.pump();
+
+    final passwordTextChildren = find.descendant(of: find.bySemanticsLabel('Senha'), matching: find.byType(Text));
+    expect(passwordTextChildren, findsOneWidget);
   });
 }

@@ -23,7 +23,7 @@ class LoginPage extends StatelessWidget {
                 child: Column(
                   children: <Widget>[
                     StreamBuilder<String>(
-                        stream: presenter?.emailErrorSteam,
+                        stream: presenter?.emailErrorStream,
                         builder: (context, snapshot) {
                           return TextFormField(
                             decoration: InputDecoration(
@@ -32,7 +32,9 @@ class LoginPage extends StatelessWidget {
                                 Icons.email,
                                 color: Theme.of(context).primaryColorLight,
                               ),
-                              errorText: snapshot.data,
+                              errorText: snapshot.data?.isEmpty == true
+                                  ? null
+                                  : snapshot.data,
                             ),
                             keyboardType: TextInputType.emailAddress,
                             onChanged: (email) =>
@@ -41,16 +43,25 @@ class LoginPage extends StatelessWidget {
                         }),
                     Padding(
                       padding: const EdgeInsets.only(top: 8, bottom: 32),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                            labelText: 'Senha',
-                            icon: Icon(
-                              Icons.lock,
-                              color: Theme.of(context).primaryColorLight,
-                            )),
-                        obscureText: true,
-                        onChanged: (password) =>
-                            presenter?.validatePassword(password),
+                      child: StreamBuilder<String>(
+                        stream: presenter?.passwordErrorStream,
+                        builder: (context, snapshot) {
+                          return TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Senha',
+                              icon: Icon(
+                                Icons.lock,
+                                color: Theme.of(context).primaryColorLight,
+                              ),
+                              errorText: snapshot.data?.isEmpty == true
+                                  ? null
+                                  : snapshot.data,
+                            ),
+                            obscureText: true,
+                            onChanged: (password) =>
+                                presenter?.validatePassword(password),
+                          );
+                        },
                       ),
                     ),
                     ElevatedButton(
