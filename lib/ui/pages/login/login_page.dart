@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../components/components.dart';
+import '../../../ui/pages/pages.dart';
+import '../../components/components.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  final LoginPresenter? presenter;
+
+  const LoginPage({super.key, this.presenter});
 
   @override
   Widget build(BuildContext context) {
@@ -19,16 +22,23 @@ class LoginPage extends StatelessWidget {
               child: Form(
                 child: Column(
                   children: <Widget>[
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        icon: Icon(
-                          Icons.email,
-                          color: Theme.of(context).primaryColorLight,
-                        ),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                    ),
+                    StreamBuilder<String>(
+                        stream: presenter?.emailErrorSteam,
+                        builder: (context, snapshot) {
+                          return TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Email',
+                              icon: Icon(
+                                Icons.email,
+                                color: Theme.of(context).primaryColorLight,
+                              ),
+                              errorText: snapshot.data,
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                            onChanged: (email) =>
+                                presenter?.validateEmail(email),
+                          );
+                        }),
                     Padding(
                       padding: const EdgeInsets.only(top: 8, bottom: 32),
                       child: TextFormField(
@@ -39,12 +49,12 @@ class LoginPage extends StatelessWidget {
                               color: Theme.of(context).primaryColorLight,
                             )),
                         obscureText: true,
+                        onChanged: (password) =>
+                            presenter?.validatePassword(password),
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: null,
-                      child: Text('Entrar'.toUpperCase())
-                    ),
+                        onPressed: null, child: Text('Entrar'.toUpperCase())),
                     Container(
                       margin: const EdgeInsets.only(top: 6),
                       child: TextButton.icon(
