@@ -10,12 +10,22 @@ class PasswordInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final presenter = Provider.of<LoginPresenter>(context);
 
-    return StreamBuilder<bool>(
-        stream: presenter.isFormValidStream,
-        builder: (context, snapshot) {
-          return ElevatedButton(
-              onPressed: snapshot.data == true ? presenter.auth : null,
-              child: Text('Entrar'.toUpperCase()));
-        });
+    return StreamBuilder<String>(
+      stream: presenter.passwordErrorStream,
+      builder: (context, snapshot) {
+        return TextFormField(
+          decoration: InputDecoration(
+            labelText: 'Senha',
+            icon: Icon(
+              Icons.lock,
+              color: Theme.of(context).primaryColorLight,
+            ),
+            errorText: snapshot.data?.isEmpty == true ? null : snapshot.data,
+          ),
+          obscureText: true,
+          onChanged: (password) => presenter.validatePassword(password),
+        );
+      },
+    );
   }
 }

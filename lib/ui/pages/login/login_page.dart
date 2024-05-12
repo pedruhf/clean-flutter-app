@@ -50,31 +50,12 @@ class _LoginPageState extends State<LoginPage> {
                     child: Form(
                       child: Column(
                         children: <Widget>[
-                          StreamBuilder<String>(
-                              stream: widget.presenter?.emailErrorStream,
-                              builder: (context, snapshot) {
-                                return TextFormField(
-                                  decoration: InputDecoration(
-                                    labelText: 'Email',
-                                    icon: Icon(
-                                      Icons.email,
-                                      color:
-                                          Theme.of(context).primaryColorLight,
-                                    ),
-                                    errorText: snapshot.data?.isEmpty == true
-                                        ? null
-                                        : snapshot.data,
-                                  ),
-                                  keyboardType: TextInputType.emailAddress,
-                                  onChanged: (email) =>
-                                      widget.presenter?.validateEmail(email),
-                                );
-                              }),
+                          const EmailInput(),
                           const Padding(
                             padding: EdgeInsets.only(top: 8, bottom: 32),
-                            child: EmailInput(),
+                            child: PasswordInput(),
                           ),
-                          const PasswordInput(),
+                          const LoginButton(),
                           Container(
                             margin: const EdgeInsets.only(top: 6),
                             child: TextButton.icon(
