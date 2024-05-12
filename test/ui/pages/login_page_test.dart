@@ -7,10 +7,12 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:clean_flutter_app/ui/pages/pages.dart';
 
-class LoginPresenterSpy extends Mock implements LoginPresenter {}
+class LoginPresenterSpy extends Mock implements LoginPresenter {
+  void mockAuth() => when(() => auth()).thenAnswer((_) => Future(() {}));
+}
 
 void main() {
-  late LoginPresenter presenter;
+  late LoginPresenterSpy presenter;
   late StreamController<String> emailErrorController;
   late StreamController<String> passwordErrorController;
   late StreamController<bool> isFormValidController;
@@ -24,6 +26,7 @@ void main() {
     isFormValidController = StreamController<bool>();
     isLoadingController = StreamController<bool>();
     mainErrorController = StreamController<String>();
+    presenter.mockAuth();
     when(() => presenter.emailErrorStream).thenAnswer((_) => emailErrorController.stream);
     when(() => presenter.passwordErrorStream).thenAnswer((_) => passwordErrorController.stream);
     when(() => presenter.isFormValidStream).thenAnswer((_) => isFormValidController.stream);
@@ -131,7 +134,7 @@ void main() {
     isFormValidController.add(true);
     await tester.pump();
     await tester.tap(find.byType(ElevatedButton));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     verify(() => presenter.auth()).called(1);
   });
