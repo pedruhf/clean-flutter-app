@@ -1,4 +1,6 @@
+import 'package:clean_flutter_app/ui/pages/login/components/email_input.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../ui/pages/pages.dart';
 import '../../components/components.dart';
@@ -27,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
           widget.presenter?.isLoadingStream.listen((isLoading) {
             if (isLoading) {
               return showLoading(context);
-            } 
+            }
             return hideLoading(context);
           });
 
@@ -43,69 +45,54 @@ class _LoginPageState extends State<LoginPage> {
                 const Headline1(text: 'Login'),
                 Padding(
                   padding: const EdgeInsets.all(32),
-                  child: Form(
-                    child: Column(
-                      children: <Widget>[
-                        StreamBuilder<String>(
-                            stream: widget.presenter?.emailErrorStream,
-                            builder: (context, snapshot) {
-                              return TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'Email',
-                                  icon: Icon(
-                                    Icons.email,
-                                    color: Theme.of(context).primaryColorLight,
+                  child: Provider(
+                    create: (_) => widget.presenter,
+                    child: Form(
+                      child: Column(
+                        children: <Widget>[
+                          StreamBuilder<String>(
+                              stream: widget.presenter?.emailErrorStream,
+                              builder: (context, snapshot) {
+                                return TextFormField(
+                                  decoration: InputDecoration(
+                                    labelText: 'Email',
+                                    icon: Icon(
+                                      Icons.email,
+                                      color:
+                                          Theme.of(context).primaryColorLight,
+                                    ),
+                                    errorText: snapshot.data?.isEmpty == true
+                                        ? null
+                                        : snapshot.data,
                                   ),
-                                  errorText: snapshot.data?.isEmpty == true
-                                      ? null
-                                      : snapshot.data,
-                                ),
-                                keyboardType: TextInputType.emailAddress,
-                                onChanged: (email) =>
-                                    widget.presenter?.validateEmail(email),
-                              );
-                            }),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8, bottom: 32),
-                          child: StreamBuilder<String>(
-                            stream: widget.presenter?.passwordErrorStream,
-                            builder: (context, snapshot) {
-                              return TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'Senha',
-                                  icon: Icon(
-                                    Icons.lock,
-                                    color: Theme.of(context).primaryColorLight,
-                                  ),
-                                  errorText: snapshot.data?.isEmpty == true
-                                      ? null
-                                      : snapshot.data,
-                                ),
-                                obscureText: true,
-                                onChanged: (password) =>
-                                    widget.presenter?.validatePassword(password),
-                              );
-                            },
+                                  keyboardType: TextInputType.emailAddress,
+                                  onChanged: (email) =>
+                                      widget.presenter?.validateEmail(email),
+                                );
+                              }),
+                          const Padding(
+                            padding: EdgeInsets.only(top: 8, bottom: 32),
+                            child: EmailInput(),
                           ),
-                        ),
-                        StreamBuilder<bool>(
-                            stream: widget.presenter?.isFormValidStream,
-                            builder: (context, snapshot) {
-                              return ElevatedButton(
-                                  onPressed: snapshot.data == true
-                                      ? widget.presenter?.auth
-                                      : null,
-                                  child: Text('Entrar'.toUpperCase()));
-                            }),
-                        Container(
-                          margin: const EdgeInsets.only(top: 6),
-                          child: TextButton.icon(
-                            onPressed: () {},
-                            icon: const Icon(Icons.person),
-                            label: const Text('Criar conta'),
-                          ),
-                        )
-                      ],
+                          StreamBuilder<bool>(
+                              stream: widget.presenter?.isFormValidStream,
+                              builder: (context, snapshot) {
+                                return ElevatedButton(
+                                    onPressed: snapshot.data == true
+                                        ? widget.presenter?.auth
+                                        : null,
+                                    child: Text('Entrar'.toUpperCase()));
+                              }),
+                          Container(
+                            margin: const EdgeInsets.only(top: 6),
+                            child: TextButton.icon(
+                              onPressed: () {},
+                              icon: const Icon(Icons.person),
+                              label: const Text('Criar conta'),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 )
@@ -116,5 +103,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
 }
