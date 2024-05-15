@@ -1,15 +1,12 @@
 import 'dart:async';
-
 import 'package:faker/faker.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-abstract class Validation {
-  validate({required String field, required String value});
-}
+import 'package:clean_flutter_app/presentation/protocols/protocols.dart';
 
 class LoginState {
-  String emailError = '';
+  String? emailError;
 }
 
 class StreamLoginPresenter {
@@ -18,7 +15,7 @@ class StreamLoginPresenter {
 
   final _state = LoginState();
 
-  Stream<String> get emailErrorStream =>
+  Stream<String?> get emailErrorStream =>
       _controller.stream.map((state) => state.emailError);
 
   StreamLoginPresenter({required this.validation});
@@ -38,7 +35,7 @@ void main() {
   When mockValidationCall(String? field) => when(() => validation.validate(
       field: field ?? any(named: 'field'), value: any(named: 'value')));
 
-  void mockValidation({ String? field, String? value }) {
+  void mockValidation({String? field, String? value}) {
     mockValidationCall(field).thenReturn(value);
   }
 
