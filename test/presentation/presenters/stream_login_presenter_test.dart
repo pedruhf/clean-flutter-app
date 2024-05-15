@@ -5,7 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 abstract class Validation {
-  validate({ required String field, required String value });
+  validate({required String field, required String value});
 }
 
 class LoginState {
@@ -18,9 +18,10 @@ class StreamLoginPresenter {
 
   final _state = LoginState();
 
-  Stream<String> get emailErrorStream => _controller.stream.map((state) => state.emailError);
+  Stream<String> get emailErrorStream =>
+      _controller.stream.map((state) => state.emailError);
 
-  StreamLoginPresenter({ required this.validation });
+  StreamLoginPresenter({required this.validation});
   void validateEmail(String email) {
     _state.emailError = validation.validate(field: 'email', value: email);
     _controller.add(_state);
@@ -34,10 +35,18 @@ void main() {
   late Validation validation;
   late String email;
 
+  When mockValidationCall(String? field) => when(() => validation.validate(
+      field: field ?? any(named: 'field'), value: any(named: 'value')));
+
+  void mockValidation({ String? field, String? value }) {
+    mockValidationCall(field).thenReturn(value);
+  }
+
   setUp(() {
     validation = ValidationSpy();
     sut = StreamLoginPresenter(validation: validation);
     email = faker.internet.email();
+    mockValidation();
   });
 
   test('should call Validation with correct email', () {
@@ -47,7 +56,7 @@ void main() {
   });
 
   test('should emit email error if validation fails', () {
-    when(() => validation.validate(field: any(named: 'field'), value: any(named: 'value'))).thenReturn('error');
+    mockValidation(value: 'error');
 
     expectLater(sut.emailErrorStream, emits('error'));
 
