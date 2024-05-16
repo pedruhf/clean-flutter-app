@@ -1,10 +1,10 @@
-import 'package:clean_flutter_app/domain/helpers/domain_error.dart';
 import 'package:faker/faker.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 import 'package:clean_flutter_app/domain/entities/account_entity.dart';
 import 'package:clean_flutter_app/domain/usecases/authentication.dart';
+import 'package:clean_flutter_app/domain/helpers/domain_error.dart';
 
 import 'package:clean_flutter_app/presentation/presenters/presenters.dart';
 import 'package:clean_flutter_app/presentation/protocols/protocols.dart';
@@ -178,5 +178,12 @@ void main() {
     sut.mainErrorStream.listen(expectAsync1((error) => expect(error, 'Algo errado aconteceu. Tente novamente em instantes')));
 
     await sut.auth();
+  });
+
+  test('should not emit after dispose', () async {
+    expectLater(sut.emailErrorStream, neverEmits(null));
+
+    sut.dispose();
+    sut.validateEmail(email);
   });
 }
