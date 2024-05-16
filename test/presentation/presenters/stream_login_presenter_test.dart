@@ -75,4 +75,11 @@ void main() {
     sut.validatePassword(email);
     sut.validatePassword(email);
   });
+
+  test('should emit null if password validation succeeds', () {
+    sut.passwordErrorStream.listen(expectAsync1((error) => expect(error, null)));
+
+    sut.validatePassword(email);
+    sut.validatePassword(email);
+  });
 }
