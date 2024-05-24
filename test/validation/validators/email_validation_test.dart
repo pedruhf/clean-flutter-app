@@ -1,19 +1,6 @@
 import 'package:test/test.dart';
 
-import 'package:clean_flutter_app/validation/validators/protocols/field_validation.dart';
-
-class EmailValidation implements FieldValidation {
-  @override
-  final String field;
-
-  EmailValidation(this.field);
-
-  @override
-  String? validate(String value) {
-    return null;
-  }
-  
-}
+import 'package:clean_flutter_app/validation/validators/validators.dart';
 
 void main() {
   late EmailValidation sut;
@@ -32,5 +19,11 @@ void main() {
     final error = sut.validate('any.email_123@gmail.com');
 
     expect(error, null);
+  });
+
+  test('should return error if email is invalid', () {
+    final error = sut.validate('any.email_123!gmail.com');
+
+    expect(error, 'campo inválido');
   });
 }
