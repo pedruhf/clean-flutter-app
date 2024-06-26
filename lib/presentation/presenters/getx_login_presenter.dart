@@ -12,9 +12,9 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
 
   String _email = '';
   String _password = '';
-  final Rx<String?> _emailError = Rx('');
-  final Rx<String?> _passwordError = Rx('');
-  final Rx<String?> _mainError = Rx('');
+  final Rx<String?> _emailError = Rx(null);
+  final Rx<String?> _passwordError = Rx(null);
+  final Rx<String?> _mainError = Rx(null);
   final _isFormValid = RxBool(false);
   final _isLoading = RxBool(false);
 
