@@ -41,9 +41,13 @@ void main() {
     sut = LocalSaveCurrentAccount(saveSecureCacheStorage: cacheStorage);
   });
 
+  When mockSaveSecureCacheStorage() {
+    return when(() => cacheStorage.saveSecure(
+        key: any(named: 'key'), value: any(named: 'value')));
+  }
+
   test('should call SaveSecureCacheStorage with correct values', () async {
-    when(() => cacheStorage.saveSecure(key: 'token', value: token))
-        .thenAnswer((invocation) => Future.value());
+    mockSaveSecureCacheStorage().thenAnswer((invocation) => Future.value());
 
     await sut.save(account);
 
@@ -52,9 +56,7 @@ void main() {
 
   test('should throw UnexpectedError if SaveSecureCacheStorage throws',
       () async {
-    when(() => cacheStorage.saveSecure(
-        key: any(named: 'key'),
-        value: any(named: 'value'))).thenThrow(Exception());
+    mockSaveSecureCacheStorage().thenThrow(Exception());
 
     final future = sut.save(account);
 
