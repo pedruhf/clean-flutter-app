@@ -1,7 +1,12 @@
-class AccountEntity {
+import 'package:equatable/equatable.dart';
+
+class AccountEntity extends Equatable {
   final String token;
 
-  AccountEntity(this.token);
+  const AccountEntity(this.token);
 
   factory AccountEntity.fromJSON(Map json) => AccountEntity(json['accessToken']);
+  
+  @override
+  List<Object?> get props => [token];
 }
