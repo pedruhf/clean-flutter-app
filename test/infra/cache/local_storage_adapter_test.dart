@@ -1,3 +1,4 @@
+import 'package:clean_flutter_app/domain/helpers/helpers.dart';
 import 'package:faker/faker.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
@@ -37,11 +38,19 @@ void main() {
         value: any(named: 'value')));
   }
 
-  test('should call save secure with correct values', () async {
+  test('should call secure storage with correct values', () async {
     mockSecureStorage().thenAnswer((invocation) => Future.value());
 
     await sut.saveSecure(key: key, value: value);
 
     verify(() => secureStorage.write(key: key, value: value)).called(1);
+  });
+
+  test('should throw if secure storage throws', () async {
+    mockSecureStorage().thenThrow(Exception());
+
+    final future = sut.saveSecure(key: key, value: value);
+
+    expect(future, throwsA(const TypeMatcher<Exception>()));
   });
 }
