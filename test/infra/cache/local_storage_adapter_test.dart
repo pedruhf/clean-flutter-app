@@ -19,25 +19,40 @@ void main() {
     value = faker.lorem.word();
   });
 
-  When mockSecureStorage() {
-    return when(() => secureStorage.write(
-        key: any(named: 'key'),
-        value: any(named: 'value')));
-  }
+  group('saveSecure', () {
+    When mockSecureStorage() {
+      return when(() => secureStorage.write(
+          key: any(named: 'key'), value: any(named: 'value')));
+    }
 
-  test('should call secure storage with correct values', () async {
-    mockSecureStorage().thenAnswer((invocation) => Future.value());
+    test('should call secure storage with correct values', () async {
+      mockSecureStorage().thenAnswer((invocation) => Future.value());
 
-    await sut.saveSecure(key: key, value: value);
+      await sut.saveSecure(key: key, value: value);
 
-    verify(() => secureStorage.write(key: key, value: value)).called(1);
+      verify(() => secureStorage.write(key: key, value: value)).called(1);
+    });
+
+    test('should throw if secure storage throws', () async {
+      mockSecureStorage().thenThrow(Exception());
+
+      final future = sut.saveSecure(key: key, value: value);
+
+      expect(future, throwsA(const TypeMatcher<Exception>()));
+    });
   });
 
-  test('should throw if secure storage throws', () async {
-    mockSecureStorage().thenThrow(Exception());
+  group('fetchSecure', () {
+    When mockSecureStorage() {
+      return when(() => secureStorage.read(key: any(named: 'key')));
+    }
 
-    final future = sut.saveSecure(key: key, value: value);
+    test('should call fetch secure with correct values', () async {
+      mockSecureStorage().thenAnswer((invocation) => Future.value(null));
 
-    expect(future, throwsA(const TypeMatcher<Exception>()));
+      await sut.fetchSecure(key);
+
+      verify(() => secureStorage.read(key: key)).called(1);
+    });
   });
 }
