@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:clean_flutter_app/ui/pages/pages.dart';
@@ -18,6 +19,7 @@ void main() {
   late StreamController<bool> isFormValidController;
   late StreamController<bool> isLoadingController;
   late StreamController<String> mainErrorController;
+  late StreamController<String> navigateToController;
 
   void initStreams() {
     emailErrorController = StreamController<String>();
@@ -25,14 +27,22 @@ void main() {
     isFormValidController = StreamController<bool>();
     isLoadingController = StreamController<bool>();
     mainErrorController = StreamController<String>();
+    navigateToController = StreamController<String>();
   }
 
   void mockStreams() {
-    when(() => presenter.emailErrorStream).thenAnswer((_) => emailErrorController.stream);
-    when(() => presenter.passwordErrorStream).thenAnswer((_) => passwordErrorController.stream);
-    when(() => presenter.isFormValidStream).thenAnswer((_) => isFormValidController.stream);
-    when(() => presenter.isLoadingStream).thenAnswer((_) => isLoadingController.stream);
-    when(() => presenter.mainErrorStream).thenAnswer((_) => mainErrorController.stream);
+    when(() => presenter.emailErrorStream)
+        .thenAnswer((_) => emailErrorController.stream);
+    when(() => presenter.passwordErrorStream)
+        .thenAnswer((_) => passwordErrorController.stream);
+    when(() => presenter.isFormValidStream)
+        .thenAnswer((_) => isFormValidController.stream);
+    when(() => presenter.isLoadingStream)
+        .thenAnswer((_) => isLoadingController.stream);
+    when(() => presenter.mainErrorStream)
+        .thenAnswer((_) => mainErrorController.stream);
+    when(() => presenter.navigateToStream)
+        .thenAnswer((_) => navigateToController.stream);
   }
 
   void closeStreams() {
@@ -41,6 +51,7 @@ void main() {
     isFormValidController.close();
     isLoadingController.close();
     mainErrorController.close();
+    navigateToController.close();
   }
 
   Future<void> loadPage(WidgetTester tester) async {
@@ -49,7 +60,17 @@ void main() {
     initStreams();
     mockStreams();
 
-    final loginPage = MaterialApp(home: LoginPage( presenter: presenter ));
+    final loginPage = GetMaterialApp(
+      initialRoute: '/login',
+      getPages: [
+        GetPage(name: '/login', page: () => LoginPage(presenter: presenter)),
+        GetPage(
+            name: '/fake_page',
+            page: () => const Scaffold(
+                  body: Text('fake page'),
+                )),
+      ],
+    );
     await tester.pumpWidget(loginPage);
   }
 
@@ -60,10 +81,12 @@ void main() {
   testWidgets("should load with correct initial state", (tester) async {
     await loadPage(tester);
 
-    final emailTextChildren = find.descendant(of: find.bySemanticsLabel('Email'), matching: find.byType(Text));
+    final emailTextChildren = find.descendant(
+        of: find.bySemanticsLabel('Email'), matching: find.byType(Text));
     expect(emailTextChildren, findsOneWidget);
 
-    final passwordTextChildren = find.descendant(of: find.bySemanticsLabel('Senha'), matching: find.byType(Text));
+    final passwordTextChildren = find.descendant(
+        of: find.bySemanticsLabel('Senha'), matching: find.byType(Text));
     expect(passwordTextChildren, findsOneWidget);
 
     final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
@@ -98,7 +121,8 @@ void main() {
     emailErrorController.add('');
     await tester.pump();
 
-    final emailTextChildren = find.descendant(of: find.bySemanticsLabel('Email'), matching: find.byType(Text));
+    final emailTextChildren = find.descendant(
+        of: find.bySemanticsLabel('Email'), matching: find.byType(Text));
     expect(emailTextChildren, findsOneWidget);
   });
 
@@ -117,7 +141,8 @@ void main() {
     passwordErrorController.add('');
     await tester.pump();
 
-    final passwordTextChildren = find.descendant(of: find.bySemanticsLabel('Senha'), matching: find.byType(Text));
+    final passwordTextChildren = find.descendant(
+        of: find.bySemanticsLabel('Senha'), matching: find.byType(Text));
     expect(passwordTextChildren, findsOneWidget);
   });
 
@@ -183,12 +208,14 @@ void main() {
 
     expect(find.text('main error'), findsOneWidget);
   });
-
-  testWidgets("should close all stream on dispose", (tester) async {
+  
+  testWidgets("should change page on success", (tester) async {
     await loadPage(tester);
 
-    addTearDown(() {
-      verify(() => presenter.dispose()).called(1);
-    });
+    navigateToController.add('/fake_page');
+    await tester.pumpAndSettle();
+
+    expect(Get.currentRoute, '/fake_page');
+    expect(find.text('fake page'), findsOneWidget);
   });
 }

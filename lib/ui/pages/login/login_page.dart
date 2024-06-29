@@ -1,51 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import '../../../ui/pages/pages.dart';
 import '../../components/components.dart';
 import './components/components.dart';
 
-class LoginPage extends StatefulWidget {
-  final LoginPresenter? presenter;
+class LoginPage extends StatelessWidget {
+  final LoginPresenter presenter;
 
-  const LoginPage({super.key, this.presenter});
-
-  @override
-  State<StatefulWidget> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  @override
-  void dispose() {
-    super.dispose();
-    widget.presenter?.dispose();
-  }
-
-  void _hideKeyboard() {
-    final currentFocus = FocusScope.of(context);
-    if (!currentFocus.hasPrimaryFocus) {
-      currentFocus.unfocus();
-    }
-  }
+  const LoginPage({super.key, required this.presenter});
 
   @override
   Widget build(BuildContext context) {
+    void hideKeyboard() {
+      final currentFocus = FocusScope.of(context);
+      if (!currentFocus.hasPrimaryFocus) {
+        currentFocus.unfocus();
+      }
+    }
+
     return Scaffold(
       body: Builder(
         builder: (context) {
-          widget.presenter?.isLoadingStream.listen((isLoading) {
+          presenter.isLoadingStream.listen((isLoading) {
             if (isLoading) {
               return showLoading(context);
             }
             return hideLoading(context);
           });
 
-          widget.presenter?.mainErrorStream.listen((error) {
+          presenter.mainErrorStream.listen((error) {
             showErrorMessage(context, error);
           });
 
+          presenter.navigateToStream.listen((page) {
+            if (page == null|| page.isEmpty == true) return;
+            Get.offAllNamed(page);
+          });
+
           return GestureDetector(
-            onTap: _hideKeyboard,
+            onTap: hideKeyboard,
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -54,8 +49,8 @@ class _LoginPageState extends State<LoginPage> {
                   const Headline1(text: 'Login'),
                   Padding(
                     padding: const EdgeInsets.all(32),
-                    child: Provider(
-                      create: (_) => widget.presenter,
+                    child: ListenableProvider(
+                      create: (_) => presenter,
                       child: Form(
                         child: Column(
                           children: <Widget>[
