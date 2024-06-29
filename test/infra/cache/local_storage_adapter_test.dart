@@ -54,5 +54,13 @@ void main() {
 
       verify(() => secureStorage.read(key: key)).called(1);
     });
+
+    test('should return correct value on success', () async {
+      mockSecureStorage().thenAnswer((invocation) => Future.value('any_fetched_value'));
+
+      final fetchedValue = await sut.fetchSecure(key);
+
+      expect(fetchedValue, 'any_fetched_value');
+    });
   });
 }
