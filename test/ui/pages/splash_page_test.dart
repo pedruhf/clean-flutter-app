@@ -14,7 +14,7 @@ void main() {
 
   Future<void> loadPage(WidgetTester widgetTester) async {
     presenter = SplashPresenterSpy();
-    when(() => presenter.loadCurrentAccount())
+    when(() => presenter.checkAccount())
         .thenAnswer((_) => Future.value());
     navigateToController = StreamController<String>();
     when(() => presenter.navigateToStream)
@@ -44,11 +44,11 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 
-  testWidgets('should call loadCurrentAccount on page load',
+  testWidgets('should call checkAccount on page load',
       (WidgetTester widgetTester) async {
     await loadPage(widgetTester);
 
-    verify(() => presenter.loadCurrentAccount()).called(1);
+    verify(() => presenter.checkAccount()).called(1);
   });
 
   testWidgets('should change page', (WidgetTester widgetTester) async {
