@@ -3,10 +3,10 @@ import '../../../domain/helpers/helpers.dart';
 import '../../../domain/usecases/usecases.dart';
 import '../../cache/cache.dart';
 
-class LocalLoadcurrentAccount implements LoadCurrentAccount {
+class LocalLoadCurrentAccount implements LoadCurrentAccount {
   final FetchSecureCacheStorage fetchSecureCacheStorage;
 
-  LocalLoadcurrentAccount({ required this.fetchSecureCacheStorage });
+  LocalLoadCurrentAccount({ required this.fetchSecureCacheStorage });
 
   @override
   Future<AccountEntity?> load() async {

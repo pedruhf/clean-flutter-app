@@ -12,7 +12,7 @@ class FetchSecureCacheStorageSpy extends Mock implements FetchSecureCacheStorage
 void main() {
   late String token;
   late FetchSecureCacheStorageSpy fetchSecureCacheStorage;
-  late LocalLoadcurrentAccount sut;
+  late LocalLoadCurrentAccount sut;
 
   When mockFetchSecure() {
     return when(() => fetchSecureCacheStorage.fetchSecure(any()));
@@ -29,7 +29,7 @@ void main() {
   setUp(() {
     token = faker.guid.guid();
     fetchSecureCacheStorage = FetchSecureCacheStorageSpy();
-    sut = LocalLoadcurrentAccount(fetchSecureCacheStorage: fetchSecureCacheStorage);
+    sut = LocalLoadCurrentAccount(fetchSecureCacheStorage: fetchSecureCacheStorage);
 
     mockFetchSecureSuccess();
   });
