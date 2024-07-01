@@ -6,6 +6,10 @@ ThemeData makeAppTheme() {
   const primaryColorLight = Color.fromRGBO(188, 71, 123, 1);
 
   return ThemeData(
+    appBarTheme: const AppBarTheme(
+      backgroundColor: primaryColor,
+      foregroundColor: Colors.white,
+    ),
     primaryColor: primaryColor,
     primaryColorDark: primaryColorDark,
     primaryColorLight: primaryColorLight,
