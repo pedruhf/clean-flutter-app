@@ -1,12 +1,13 @@
 import 'package:test/test.dart';
 
 import 'package:clean_flutter_app/validation/validators/validators.dart';
+import 'package:clean_flutter_app/presentation/protocols/protocols.dart';
 
 void main() {
   late RequiredFieldValidation sut;
 
   setUp(() {
-    sut = RequiredFieldValidation('any_field');
+    sut = const RequiredFieldValidation('any_field');
   });
 
   test('should return null if value is not empty', () {
@@ -18,6 +19,6 @@ void main() {
   test('should return error message if value is empty', () {
     final error = sut.validate('');
 
-    expect(error, 'campo obrigatório');
+    expect(error, ValidationError.requiredField);
   });
 }

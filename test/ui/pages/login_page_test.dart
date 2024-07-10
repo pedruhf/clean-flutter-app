@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clean_flutter_app/ui/helpers/errors/ui_error.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,19 +15,19 @@ class LoginPresenterSpy extends Mock implements LoginPresenter {
 
 void main() {
   late LoginPresenterSpy presenter;
-  late StreamController<String> emailErrorController;
-  late StreamController<String> passwordErrorController;
+  late StreamController<UIError?> emailErrorController;
+  late StreamController<UIError?> passwordErrorController;
+  late StreamController<UIError?> mainErrorController;
   late StreamController<bool> isFormValidController;
   late StreamController<bool> isLoadingController;
-  late StreamController<String> mainErrorController;
   late StreamController<String> navigateToController;
 
   void initStreams() {
-    emailErrorController = StreamController<String>();
-    passwordErrorController = StreamController<String>();
+    emailErrorController = StreamController<UIError?>();
+    passwordErrorController = StreamController<UIError?>();
+    mainErrorController = StreamController<UIError?>();
     isFormValidController = StreamController<bool>();
     isLoadingController = StreamController<bool>();
-    mainErrorController = StreamController<String>();
     navigateToController = StreamController<String>();
   }
 
@@ -109,16 +110,25 @@ void main() {
   testWidgets("should presents error if email is invalid", (tester) async {
     await loadPage(tester);
 
-    emailErrorController.add('any error');
+    emailErrorController.add(UIError.invalidField);
     await tester.pump();
 
-    expect(find.text('any error'), findsOneWidget);
+    expect(find.text('Campo inválido'), findsOneWidget);
+  });
+
+  testWidgets("should presents error if email is empty", (tester) async {
+    await loadPage(tester);
+
+    emailErrorController.add(UIError.requiredField);
+    await tester.pump();
+
+    expect(find.text('Campo obrigatório'), findsOneWidget);
   });
 
   testWidgets("should presents no error if email is valid", (tester) async {
     await loadPage(tester);
 
-    emailErrorController.add('');
+    emailErrorController.add(null);
     await tester.pump();
 
     final emailTextChildren = find.descendant(
@@ -126,19 +136,19 @@ void main() {
     expect(emailTextChildren, findsOneWidget);
   });
 
-  testWidgets("should presents error if password is invalid", (tester) async {
+  testWidgets("should presents error if password is empty", (tester) async {
     await loadPage(tester);
 
-    passwordErrorController.add('password error');
+    passwordErrorController.add(UIError.requiredField);
     await tester.pump();
 
-    expect(find.text('password error'), findsOneWidget);
+    expect(find.text('Campo obrigatório'), findsOneWidget);
   });
 
   testWidgets("should presents no error if password is valid", (tester) async {
     await loadPage(tester);
 
-    passwordErrorController.add('');
+    passwordErrorController.add(null);
     await tester.pump();
 
     final passwordTextChildren = find.descendant(
@@ -203,10 +213,19 @@ void main() {
   testWidgets("should presents error message if auth fails", (tester) async {
     await loadPage(tester);
 
-    mainErrorController.add('main error');
+    mainErrorController.add(UIError.invalidCredentials);
     await tester.pump();
 
-    expect(find.text('main error'), findsOneWidget);
+    expect(find.text('Credenciais inválidas'), findsOneWidget);
+  });
+
+  testWidgets("should presents error message if auth throws", (tester) async {
+    await loadPage(tester);
+
+    mainErrorController.add(UIError.unexpected);
+    await tester.pump();
+
+    expect(find.text('Algo errado aconteceu. Tente novamente em instantes'), findsOneWidget);
   });
   
   testWidgets("should change page on success", (tester) async {

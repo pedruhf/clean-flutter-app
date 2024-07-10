@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../helpers/errors/errors.dart';
+
 abstract class LoginPresenter implements Listenable {
-  Stream<String?> get emailErrorStream;
-  Stream<String?> get passwordErrorStream;
+  Stream<UIError?> get emailErrorStream;
+  Stream<UIError?> get passwordErrorStream;
   Stream<bool> get isFormValidStream;
   Stream<bool> get isLoadingStream;
-  Stream<String?> get mainErrorStream;
+  Stream<UIError?> get mainErrorStream;
   Stream<String?> get navigateToStream;
 
   void validateEmail(String email);

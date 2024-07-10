@@ -1,12 +1,13 @@
 import 'package:test/test.dart';
 
 import 'package:clean_flutter_app/validation/validators/validators.dart';
+import 'package:clean_flutter_app/presentation/protocols/protocols.dart';
 
 void main() {
   late EmailValidation sut;
 
   setUp(() {
-    sut = EmailValidation('any_field');
+    sut = const EmailValidation('any_field');
   });
 
   test('should return null if email is empty', () {
@@ -24,6 +25,6 @@ void main() {
   test('should return error if email is invalid', () {
     final error = sut.validate('any.email_123!gmail.com');
 
-    expect(error, 'campo inválido');
+    expect(error, ValidationError.invalidField);
   });
 }
