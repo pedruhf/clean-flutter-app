@@ -1,3 +1,5 @@
+import 'package:clean_flutter_app/ui/helpers/i18n/resources.dart';
+
 enum UIError {
   requiredField,
   invalidField,
@@ -8,10 +10,10 @@ enum UIError {
 extension UIErrorExtension on UIError {
   String get description {
     switch(this) {
-      case UIError.requiredField: return 'Campo obrigatório';
-      case UIError.invalidField: return 'Campo inválido';
-      case UIError.invalidCredentials: return 'Credenciais inválidas';
-      case UIError.unexpected: return 'Algo errado aconteceu. Tente novamente em instantes';
+      case UIError.requiredField: return R.strings.msgRequiredField;
+      case UIError.invalidField: return R.strings.msgInvalidField;
+      case UIError.invalidCredentials: return R.strings.msgInvalidCredentials;
+      case UIError.unexpected: return R.strings.msgUnexpected;
       default: return '';
     }
   }
